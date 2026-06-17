@@ -16,7 +16,43 @@ const state = {
 };
 
 const bgCache = {}; // templateId -> HTMLImageElement (для background.type === 'image')
+const assetCache = {}; // src -> HTMLImageElement | null (логотипы и пр.)
 let renderSeq = 0;
+let assetsReady = null;
+
+/* Предзагрузка брендовых ассетов (логотипы), если заданы пути */
+function ensureAssets() {
+  if (assetsReady) return assetsReady;
+  const srcs = [BRAND.logoDark, BRAND.logoWhite].filter(Boolean);
+  assetsReady = Promise.all(
+    srcs.map((src) =>
+      loadImageFromSrc(src).then(
+        (img) => { assetCache[src] = img; },
+        () => { assetCache[src] = null; }
+      )
+    )
+  );
+  return assetsReady;
+}
+
+/* Рисует логотип бренда: картинку из ассетов или текстовый вариант "yma" */
+function drawBrandLogo(ctx, x, y, height, variant = "dark") {
+  const src = variant === "white" ? BRAND.logoWhite : BRAND.logoDark;
+  const img = src ? assetCache[src] : null;
+  if (img) {
+    const ratio = img.width / img.height;
+    ctx.drawImage(img, x, y, height * ratio, height);
+    return;
+  }
+  // текстовая заглушка
+  ctx.save();
+  ctx.fillStyle = variant === "white" ? "#ffffff" : BRAND.ink;
+  ctx.font = `800 ${height * 1.05}px "${BRAND.fontBody}", sans-serif`;
+  ctx.textBaseline = "top";
+  ctx.textAlign = "left";
+  ctx.fillText(BRAND.name, x, y);
+  ctx.restore();
+}
 
 /* ----------------------------- утилиты ---------------------------------- */
 
@@ -89,12 +125,12 @@ function roundRectPath(x, y, w, h, r) {
 function drawImagePlaceholder(zone) {
   const { x, y, w, h, radius = 0 } = zone;
   ctx.save();
-  ctx.fillStyle = "rgba(255,255,255,0.10)";
+  ctx.fillStyle = "rgba(20,22,30,0.06)";
   if (radius) roundRectPath(x, y, w, h, radius);
   else { ctx.beginPath(); ctx.rect(x, y, w, h); }
   ctx.fill();
   // иконка
-  ctx.strokeStyle = "rgba(255,255,255,0.5)";
+  ctx.strokeStyle = "rgba(20,22,30,0.30)";
   ctx.lineWidth = Math.max(2, Math.min(w, h) * 0.012);
   const cx = x + w / 2, cy = y + h / 2, s = Math.min(w, h) * 0.18;
   ctx.strokeRect(cx - s, cy - s * 0.75, s * 2, s * 1.5);
@@ -104,7 +140,7 @@ function drawImagePlaceholder(zone) {
   ctx.lineTo(cx + s * 0.25, cy + s * 0.3);
   ctx.lineTo(cx + s, cy - s * 0.25);
   ctx.stroke();
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillStyle = "rgba(20,22,30,0.45)";
   ctx.font = `600 ${Math.max(14, Math.min(w, h) * 0.05)}px ${BRAND.fontBody}, sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
@@ -160,7 +196,7 @@ function drawTextZone(zone, value) {
   if (zone.uppercase) text = text.toUpperCase();
 
   const lineHeight = zone.lineHeight || 1.2;
-  const fontFamily = `${zone.font || BRAND.fontBody}, sans-serif`;
+  const fontFamily = `"${zone.font || BRAND.fontBody}", sans-serif`;
   let size = zone.size;
   let lines;
 
@@ -199,6 +235,8 @@ async function render() {
   const tpl = state.template;
   if (!tpl) return;
   const seq = ++renderSeq;
+  await ensureAssets();
+  if (seq !== renderSeq) return;
 
   canvas.width = tpl.width;
   canvas.height = tpl.height;
@@ -373,8 +411,19 @@ function init() {
   selectTemplate(TEMPLATES[0].id);
 }
 
+/* Явно подгружаем веб-шрифты — canvas не качает их сам, пока ими не
+   отрисован DOM-элемент, поэтому document.fonts.load() обязателен. */
+function ensureFonts() {
+  if (!document.fonts || !document.fonts.load) return Promise.resolve();
+  const specs = [
+    `400 64px "${BRAND.fontDisplay}"`,
+    `400 64px "${BRAND.fontBody}"`,
+    `500 64px "${BRAND.fontBody}"`,
+    `600 64px "${BRAND.fontBody}"`,
+  ];
+  return Promise.all(specs.map((s) => document.fonts.load(s).catch(() => {})));
+}
+
 // стартуем сразу, а после загрузки шрифтов перерисовываем правильным шрифтом
 init();
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => render());
-}
+ensureFonts().then(() => render());
