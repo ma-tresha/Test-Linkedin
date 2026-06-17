@@ -1,0 +1,188 @@
+:root {
+  --bg: #0b1f1e;
+  --panel: #ffffff;
+  --ink: #0b1f1e;
+  --muted: #5a6b6a;
+  --line: #e3e9e8;
+  --accent: #0fa3a0;
+  --accent-ink: #0e5e5a;
+  --radius: 14px;
+  --shadow: 0 8px 30px rgba(11, 31, 30, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--ink);
+  background: #eef2f1;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
+  background: var(--bg);
+  color: #eafffb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(15, 163, 160, 0.25);
+}
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+select, .btn, input, textarea {
+  font-family: inherit;
+  font-size: 14px;
+}
+select {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #eafffb;
+  cursor: pointer;
+}
+select option { color: #0b1f1e; }
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.05s ease, opacity 0.15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); color: #04211f; }
+.btn-primary:hover { opacity: 0.92; }
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.panel-title {
+  margin: 0 0 16px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+/* Fields */
+.fields { display: flex; flex-direction: column; gap: 18px; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.field textarea,
+.field input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  resize: vertical;
+  background: #fbfdfc;
+  color: var(--ink);
+}
+.field textarea { min-height: 64px; line-height: 1.4; }
+.field textarea:focus,
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 163, 160, 0.15);
+}
+
+/* File input */
+.filefield .file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.file-btn {
+  background: #eafaf9;
+  color: var(--accent-ink);
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.file-name { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-clear {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+input[type="file"] { display: none; }
+
+.hint { font-size: 12px; color: var(--muted); margin-top: 18px; }
+
+/* Preview */
+.canvas-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    linear-gradient(45deg, #f0f3f2 25%, transparent 25%) -10px 0,
+    linear-gradient(-45deg, #f0f3f2 25%, transparent 25%) -10px 0,
+    linear-gradient(45deg, transparent 75%, #f0f3f2 75%),
+    linear-gradient(-45deg, transparent 75%, #f0f3f2 75%);
+  background-size: 20px 20px;
+  background-color: #fafcfb;
+  border-radius: 10px;
+  padding: 16px;
+}
+#canvas {
+  max-width: 100%;
+  max-height: 70vh;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 6px 24px rgba(11, 31, 30, 0.18);
+}
+.canvas-meta {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 12px 0 0;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkedIn Post Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span>LinkedIn Post Builder</span>
+    </div>
+    <div class="topbar-actions">
+      <select id="templateSelect" aria-label="Шаблон"></select>
+      <button id="downloadBtn" class="btn btn-primary" type="button">Скачать PNG</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Left: controls -->
+    <section class="panel controls">
+      <h2 class="panel-title">Содержимое</h2>
+      <div id="fields" class="fields"></div>
+      <p class="hint">
+        Заполните текст и загрузите изображения — превью обновится автоматически.
+      </p>
+    </section>
+
+    <!-- Right: preview -->
+    <section class="panel preview">
+      <h2 class="panel-title">Превью</h2>
+      <div class="canvas-wrap">
+        <canvas id="canvas"></canvas>
+      </div>
+      <p class="canvas-meta" id="canvasMeta"></p>
+    </section>
+  </main>
+
+  <script src="templates.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
